@@ -1,134 +1,287 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
- <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#2563eb">
-  <title>保育園感染症 共有</title>
-  <link rel="stylesheet" href="styles.css">
- </head>
- <body>
-  <header class="app-header">
-   <div class="brand">
-    <div class="title">保育園感染症 共有</div>
-    <div class="subtitle" id="nowText"></div>
-   </div>
-   <button class="icon-btn" id="openSettingsBtn" aria-label="設定">⚙️</button>
-  </header>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>自己紹介｜ブログ的プロフィール & クイズ</title>
+  <style>
+    :root {
+      --bg: #0f172a;        /* slate-900 */
+      --panel: #111827;     /* gray-900 */
+      --ink: #e5e7eb;       /* gray-200 */
+      --ink-dim: #9ca3af;   /* gray-400 */
+      --accent: #60a5fa;    /* blue-400 */
+      --accent-2: #34d399;  /* emerald-400 */
+      --danger: #f87171;    /* red-400 */
+      --ok: #86efac;        /* green-300 */
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.75; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-  <main id="pages">
-   <section id="page-input" class="page" aria-labelledby="input-title">
-    <h2 id="input-title" class="page-title">入力</h2>
-    <div class="selectors">
-     <label>
-      地域
-      <select id="regionSelect"></select>
-     </label>
-     <label>
-      保育園
-      <select id="nurserySelect"></select>
-     </label>
-    </div>
-    <div class="section">
-     <div class="section-head">
-      <div class="section-title">感染症（タップで1件追加）</div>
-      <div class="muted" id="activeWindowLabel"></div>
-     </div>
-     <div id="diseaseGrid" class="grid"></div>
-     <div class="add-row">
-      <input id="newDiseaseName" type="text" inputmode="kana-name" placeholder="感染症名を入力" />
-      <button id="addDiseaseBtn" class="btn">追加</button>
-     </div>
-    </div>
-   </section>
+    .wrap { max-width: 960px; margin: 0 auto; padding: 24px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; }
+    .title { font-size: clamp(20px, 3vw, 28px); font-weight: 700; letter-spacing: .02em; }
+    .nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tabbtn { appearance: none; border: 1px solid #1f2937; background: #0b1220; color: var(--ink); padding: 10px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; }
+    .tabbtn[aria-pressed="true"] { background: #13233f; border-color: #1e40af; color: #dbeafe; }
 
-   <section id="page-nursery" class="page" aria-labelledby="nursery-title" hidden>
-    <h2 id="nursery-title" class="page-title">閲覧（園別）</h2>
-    <div class="selectors">
-     <label>
-      保育園
-      <select id="viewNurserySelect"></select>
-     </label>
-    </div>
-    <div class="cards" id="nurseryStats"></div>
-   </section>
+    .panel { background: var(--panel); border: 1px solid #1f2937; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    .muted { color: var(--ink-dim); }
+    h2 { margin: 8px 0 16px; font-size: clamp(20px, 2.5vw, 26px); }
+    h3 { margin: 24px 0 8px; font-size: clamp(18px, 2.2vw, 22px); }
 
-   <section id="page-region" class="page" aria-labelledby="region-title" hidden>
-    <h2 id="region-title" class="page-title">閲覧（地域別）</h2>
-    <div class="selectors">
-     <label>
-      地域
-      <select id="viewRegionSelect"></select>
-     </label>
-    </div>
-    <div class="cards" id="regionStats"></div>
-   </section>
+    /* quiz */
+    .q { padding: 16px; border: 1px solid #1f2937; border-radius: 12px; margin: 16px 0; background: #0b1220; }
+    .q h4 { margin: 0 0 10px; font-size: 18px; }
+    .choices { display: grid; gap: 8px; }
+    .choices label { display: flex; gap: 10px; align-items: flex-start; background: #0a1322; border: 1px solid #1f2937; padding: 10px 12px; border-radius: 10px; cursor: pointer; }
+    .choices input { margin-top: 4px; }
 
-   <section id="page-messages" class="page" aria-labelledby="messages-title" hidden>
-    <h2 id="messages-title" class="page-title">メッセージ</h2>
-    <div id="messageList" class="list"></div>
-    <div class="add-row">
-     <input id="messageInput" type="text" placeholder="メッセージを入力" />
-     <button id="sendMessageBtn" class="btn">送信</button>
-    </div>
-   </section>
+    .quiz-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    button.primary { background: #1e3a8a; color: #fff; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+    button.secondary { background: #0b1220; color: var(--ink); border: 1px solid #1f2937; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+    .score { margin-top: 12px; font-weight: 700; }
+    .feedback { margin-top: 6px; padding: 8px 10px; border-radius: 8px; display: inline-block; }
+    .feedback.ok { background: rgba(34,197,94,.12); color: var(--ok); border: 1px solid rgba(34,197,94,.35); }
+    .feedback.ng { background: rgba(248,113,113,.12); color: var(--danger); border: 1px solid rgba(248,113,113,.35); }
+    .footnote { margin-top: 20px; font-size: 14px; color: var(--ink-dim); }
 
-   <section id="page-calendar" class="page" aria-labelledby="calendar-title" hidden>
-    <h2 id="calendar-title" class="page-title">カレンダー</h2>
-    <div class="add-row">
-     <input id="eventDate" type="date" />
-     <input id="eventText" type="text" placeholder="予定・お知らせ" />
-     <button id="addEventBtn" class="btn">追加</button>
-    </div>
-    <div id="calendarList" class="list"></div>
-   </section>
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #f3f4f6; --panel: #ffffff; --ink: #0b1220; --ink-dim: #4b5563; }
+      .tabbtn { border-color: #e5e7eb; background: #fff; }
+      .panel { border-color: #e5e7eb; }
+      .q { background: #fff; border-color: #e5e7eb; }
+      .choices label { background: #fff; border-color: #e5e7eb; }
+      .secondary { background: #fff; border-color: #e5e7eb; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">自己紹介｜ブログ的プロフィール & クイズ</div>
+      <nav class="nav" aria-label="セクション切替">
+        <button class="tabbtn" aria-pressed="true" data-tab="intro">自己紹介</button>
+        <button class="tabbtn" aria-pressed="false" data-tab="quiz">クイズ</button>
+      </nav>
+    </header>
 
-   <section id="page-settings" class="page" aria-labelledby="settings-title" hidden>
-    <h2 id="settings-title" class="page-title">設定</h2>
-    <div class="section">
-     <div class="field">
-      <label>カウント対象期間（日）<input id="activeDaysInput" type="number" min="1" max="30"></label>
-     </div>
-     <div class="row">
-      <button id="exportBtn" class="btn secondary">エクスポート</button>
-      <label class="btn secondary">
-       インポート<input id="importFile" type="file" accept="application/json" hidden>
-      </label>
-      <button id="resetBtn" class="btn danger">全データ削除</button>
-     </div>
-    </div>
-    <div class="section">
-     <div class="section-head">
-      <div class="section-title">リアルタイム同期（任意）</div>
-      <div class="muted">Firebaseを設定すると端末間で共有されます</div>
-     </div>
-     <div class="field switch">
-      <label>
-       <input id="firebaseToggle" type="checkbox">有効化
-      </label>
-     </div>
-     <div class="field">
-      <textarea id="firebaseConfig" rows="6" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
-     </div>
-     <div class="row">
-      <button id="connectFirebaseBtn" class="btn">接続</button>
-      <div id="firebaseStatus" class="muted"></div>
-     </div>
-    </div>
-   </section>
-  </main>
+    <!-- Intro Panel -->
+    <section id="intro" class="panel" role="region" aria-labelledby="intro-title">
+      <h2 id="intro-title">自己紹介</h2>
 
-  <nav class="tabbar">
-   <button class="tab-btn" data-target="page-input">入力</button>
-   <button class="tab-btn" data-target="page-nursery">園別</button>
-   <button class="tab-btn" data-target="page-region">地域</button>
-   <button class="tab-btn" data-target="page-messages">メッセージ</button>
-   <button class="tab-btn" data-target="page-calendar">カレンダー</button>
-   <button class="tab-btn" data-target="page-settings">設定</button>
-  </nav>
+      <h3>ごあいさつ</h3>
+      <p>
+        はじめまして。日々、小児科の診療に携わりながら、医療を通じて社会と人のつながりを考えています。
+        子どもたちの健やかな成長を支えることはもちろんのこと、ご家族が安心して相談できる場をつくることを大切にしています。
+      </p>
 
-  <div id="toast" class="toast" hidden></div>
+      <h3>日々の取り組み</h3>
+      <p>
+        診療の現場では、ひとりひとりの背景や想いに耳を傾けながら、わかりやすく丁寧な医療を心がけています。
+        また、医療がより身近で、誰にとっても理解しやすいものになるよう、情報発信にも取り組んでいます。
+        医療は「治す」だけでなく、「伝える」ことも大切だと感じています。
+      </p>
 
-  <script src="app.js"></script>
- </body>
- </html>
+      <h3>経営と学び</h3>
+      <p>
+        クリニックの運営を通して、医療を持続的に支える仕組みづくりや、働く環境の改善にも関心を持っています。
+        経営や投資の世界にも視野を広げ、社会の動きや経済の仕組みを学びながら、より良い医療体制を築くためのヒントを探っています。
+      </p>
+
+      <h3>趣味と関心</h3>
+      <p>
+        休日には、静かに本を読んだり、コーヒーを淹れて過ごす時間を大切にしています。
+        アートやデザインにも興味があり、日常のなかにある「美しさ」や「余白」に心を惹かれます。
+        そうした感覚が、医療や人との関わりにも豊かさをもたらしてくれると感じています。
+      </p>
+
+      <h3>このブログについて</h3>
+      <p>
+        このブログでは、日々の診療を通して感じたことや、医療・経営・社会についての考察を記しています。
+        専門的な内容もありますが、できるだけ平易な言葉で、読む人の生活に少しでも役立つ視点を届けたいと思っています。
+        穏やかな時間の中で、思考を整理し、次につながるヒントを見つける場所になれば幸いです。
+      </p>
+
+      <p class="muted">※ 個人を特定できる情報は掲載していません。</p>
+    </section>
+
+    <!-- Quiz Panel -->
+    <section id="quiz" class="panel" role="region" aria-labelledby="quiz-title" hidden>
+      <h2 id="quiz-title">プロフィール・クイズ</h2>
+      <p class="muted">以下の文章（自己紹介）をもとに作られた小さなクイズです。気軽にお試しください。</p>
+
+      <div id="quiz-area"></div>
+
+      <div class="quiz-actions">
+        <button id="check" class="primary">採点する</button>
+        <button id="reset" class="secondary" aria-describedby="reset-note">リセット</button>
+      </div>
+      <div id="result" class="score" aria-live="polite"></div>
+      <div id="perq" class="footnote"></div>
+    </section>
+
+    <footer class="footnote">© プライバシー配慮のデモページ（個人情報の掲載はありません）。</footer>
+  </div>
+
+  <script>
+    // --- Tab switching ---
+    const tabs = document.querySelectorAll('.tabbtn');
+    const introPanel = document.getElementById('intro');
+    const quizPanel = document.getElementById('quiz');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        tabs.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+        if (tab === 'intro') {
+          introPanel.hidden = false;
+          quizPanel.hidden = true;
+        } else {
+          introPanel.hidden = true;
+          quizPanel.hidden = false;
+        }
+      });
+    });
+
+    // --- Quiz data (編集しやすい構造) ---
+    const QUESTIONS = [
+      {
+        id: 'q1',
+        type: 'single',
+        text: '自己紹介の筆者が専門としている診療科はどれ？',
+        choices: ['小児科', '整形外科', '皮膚科', '耳鼻咽喉科'],
+        answer: 0,
+        explain: '本文の冒頭に「小児科の診療に携わり」と記載があります。'
+      },
+      {
+        id: 'q2',
+        type: 'truefalse',
+        text: '本文では「医療は治すだけでなく、伝えることも大切」と述べられている。',
+        choices: ['正しい', '誤り'],
+        answer: 0,
+        explain: '「医療は『治す』だけでなく、『伝える』ことも大切」と明記されています。'
+      },
+      {
+        id: 'q3',
+        type: 'single',
+        text: '筆者が学びの対象として挙げていないものはどれ？',
+        choices: ['経営', '投資', '天文学', '社会の動き'],
+        answer: 2,
+        explain: '本文では経営・投資・社会の動きに触れていますが、天文学には触れていません。'
+      },
+      {
+        id: 'q4',
+        type: 'single',
+        text: '趣味・関心として本文に登場しないものはどれ？',
+        choices: ['読書', 'コーヒー', 'アートやデザイン', 'マラソン'],
+        answer: 3,
+        explain: '読書、コーヒー、アートやデザインは登場しますが、マラソンは登場しません。'
+      },
+      {
+        id: 'q5',
+        type: 'truefalse',
+        text: 'このブログは、専門的な話題のみを専門用語で詳説することを目的としている。',
+        choices: ['正しい', '誤り'],
+        answer: 1,
+        explain: '「できるだけ平易な言葉で、生活に役立つ視点を届けたい」とあり、専門用語のみを目的としていません。'
+      },
+      {
+        id: 'q6',
+        type: 'single',
+        text: '筆者が大切にしている診療姿勢として最も近いものは？',
+        choices: ['スピード重視で説明は最小限', '背景に耳を傾け丁寧に伝える', '検査中心で対話は省略', 'オンライン診療のみを推進'],
+        answer: 1,
+        explain: '「背景や想いに耳を傾け、わかりやすく丁寧な医療」を心がけていると記載されています。'
+      }
+    ];
+
+    // --- Render quiz ---
+    const quizArea = document.getElementById('quiz-area');
+
+    function renderQuiz() {
+      quizArea.innerHTML = '';
+      QUESTIONS.forEach((q, idx) => {
+        const box = document.createElement('div');
+        box.className = 'q';
+        const h4 = document.createElement('h4');
+        h4.textContent = `${idx + 1}. ${q.text}`;
+        box.appendChild(h4);
+
+        const choices = document.createElement('div');
+        choices.className = 'choices';
+
+        q.choices.forEach((c, i) => {
+          const id = `${q.id}-${i}`;
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = q.id;
+          input.value = String(i);
+          input.id = id;
+          const span = document.createElement('span');
+          span.textContent = c;
+          label.appendChild(input);
+          label.appendChild(span);
+          choices.appendChild(label);
+        });
+        box.appendChild(choices);
+
+        const fb = document.createElement('div');
+        fb.id = `${q.id}-fb`;
+        box.appendChild(fb);
+
+        quizArea.appendChild(box);
+      });
+    }
+
+    renderQuiz();
+
+    function grade() {
+      let correct = 0; let total = QUESTIONS.length;
+      QUESTIONS.forEach(q => {
+        const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+        const fb = document.getElementById(`${q.id}-fb`);
+        fb.innerHTML = '';
+        if (!selected) {
+          const d = document.createElement('div');
+          d.className = 'feedback ng';
+          d.textContent = '未回答';
+          fb.appendChild(d);
+          return;
+        }
+        const ok = Number(selected.value) === q.answer;
+        const d = document.createElement('div');
+        d.className = 'feedback ' + (ok ? 'ok' : 'ng');
+        d.textContent = ok ? '正解！' : '不正解';
+        fb.appendChild(d);
+        const tip = document.createElement('div');
+        tip.className = 'muted';
+        tip.style.marginTop = '6px';
+        tip.textContent = q.explain;
+        fb.appendChild(tip);
+        if (ok) correct++;
+      });
+      const result = document.getElementById('result');
+      result.textContent = `スコア：${correct} / ${total}（正答率 ${(correct/total*100).toFixed(0)}%）`;
+
+      // per-question summary
+      const perq = document.getElementById('perq');
+      let lines = QUESTIONS.map((q, i) => `${i+1}.${q.id}`);
+      perq.textContent = `設問：${lines.join('｜')} ／ 「リセット」でやり直せます。`;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function resetQuiz() {
+      document.getElementById('result').textContent = '';
+      document.getElementById('perq').textContent = '';
+      renderQuiz();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('check').addEventListener('click', grade);
+    document.getElementById('reset').addEventListener('click', resetQuiz);
+  </script>
+</body>
+</html>
