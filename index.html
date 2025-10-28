@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ja">
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>保育園感染症 共有</title>
+  <link rel="stylesheet" href="styles.css">
+ </head>
+ <body>
+  <header class="app-header">
+   <div class="brand">
+    <div class="title">保育園感染症 共有</div>
+    <div class="subtitle" id="nowText"></div>
+   </div>
+   <button class="icon-btn" id="openSettingsBtn" aria-label="設定">⚙️</button>
+  </header>
+
+  <main id="pages">
+   <section id="page-input" class="page" aria-labelledby="input-title">
+    <h2 id="input-title" class="page-title">入力</h2>
+    <div class="selectors">
+     <label>
+      地域
+      <select id="regionSelect"></select>
+     </label>
+     <label>
+      保育園
+      <select id="nurserySelect"></select>
+     </label>
+    </div>
+    <div class="section">
+     <div class="section-head">
+      <div class="section-title">感染症（タップで1件追加）</div>
+      <div class="muted" id="activeWindowLabel"></div>
+     </div>
+     <div id="diseaseGrid" class="grid"></div>
+     <div class="add-row">
+      <input id="newDiseaseName" type="text" inputmode="kana-name" placeholder="感染症名を入力" />
+      <button id="addDiseaseBtn" class="btn">追加</button>
+     </div>
+    </div>
+   </section>
+
+   <section id="page-nursery" class="page" aria-labelledby="nursery-title" hidden>
+    <h2 id="nursery-title" class="page-title">閲覧（園別）</h2>
+    <div class="selectors">
+     <label>
+      保育園
+      <select id="viewNurserySelect"></select>
+     </label>
+    </div>
+    <div class="cards" id="nurseryStats"></div>
+   </section>
+
+   <section id="page-region" class="page" aria-labelledby="region-title" hidden>
+    <h2 id="region-title" class="page-title">閲覧（地域別）</h2>
+    <div class="selectors">
+     <label>
+      地域
+      <select id="viewRegionSelect"></select>
+     </label>
+    </div>
+    <div class="cards" id="regionStats"></div>
+   </section>
+
+   <section id="page-messages" class="page" aria-labelledby="messages-title" hidden>
+    <h2 id="messages-title" class="page-title">メッセージ</h2>
+    <div id="messageList" class="list"></div>
+    <div class="add-row">
+     <input id="messageInput" type="text" placeholder="メッセージを入力" />
+     <button id="sendMessageBtn" class="btn">送信</button>
+    </div>
+   </section>
+
+   <section id="page-calendar" class="page" aria-labelledby="calendar-title" hidden>
+    <h2 id="calendar-title" class="page-title">カレンダー</h2>
+    <div class="add-row">
+     <input id="eventDate" type="date" />
+     <input id="eventText" type="text" placeholder="予定・お知らせ" />
+     <button id="addEventBtn" class="btn">追加</button>
+    </div>
+    <div id="calendarList" class="list"></div>
+   </section>
+
+   <section id="page-settings" class="page" aria-labelledby="settings-title" hidden>
+    <h2 id="settings-title" class="page-title">設定</h2>
+    <div class="section">
+     <div class="field">
+      <label>カウント対象期間（日）<input id="activeDaysInput" type="number" min="1" max="30"></label>
+     </div>
+     <div class="row">
+      <button id="exportBtn" class="btn secondary">エクスポート</button>
+      <label class="btn secondary">
+       インポート<input id="importFile" type="file" accept="application/json" hidden>
+      </label>
+      <button id="resetBtn" class="btn danger">全データ削除</button>
+     </div>
+    </div>
+    <div class="section">
+     <div class="section-head">
+      <div class="section-title">リアルタイム同期（任意）</div>
+      <div class="muted">Firebaseを設定すると端末間で共有されます</div>
+     </div>
+     <div class="field switch">
+      <label>
+       <input id="firebaseToggle" type="checkbox">有効化
+      </label>
+     </div>
+     <div class="field">
+      <textarea id="firebaseConfig" rows="6" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
+     </div>
+     <div class="row">
+      <button id="connectFirebaseBtn" class="btn">接続</button>
+      <div id="firebaseStatus" class="muted"></div>
+     </div>
+    </div>
+   </section>
+  </main>
+
+  <nav class="tabbar">
+   <button class="tab-btn" data-target="page-input">入力</button>
+   <button class="tab-btn" data-target="page-nursery">園別</button>
+   <button class="tab-btn" data-target="page-region">地域</button>
+   <button class="tab-btn" data-target="page-messages">メッセージ</button>
+   <button class="tab-btn" data-target="page-calendar">カレンダー</button>
+   <button class="tab-btn" data-target="page-settings">設定</button>
+  </nav>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="app.js"></script>
+ </body>
+ </html>
