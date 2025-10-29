@@ -4,59 +4,161 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>自己紹介｜ブログ的プロフィール & クイズ</title>
-  <style>
+<style>
+/* ==============================
+   🌿 Cheerful Natural Green Theme
+   ============================== */
 :root {
   --bg: #f9fafb;        /* 背景（全体） */
   --panel: #ffffff;     /* コンテンツボックス */
   --ink: #1f2937;       /* メイン文字 */
   --ink-dim: #6b7280;   /* サブ文字 */
-  --accent: #6ee7b7;    /* 緑系のアクセント */
-  --accent-2: #34d399;  /* 少し濃いグリーン */
-  --danger: #f87171;    /* エラー表示（赤） */
-  --ok: #16a34a;        /* 成功表示（緑） */
+  --accent: #6ee7b7;    /* 緑系アクセント */
+  --accent-2: #34d399;  /* 濃いグリーン */
+  --danger: #f87171;    /* エラー（赤） */
+  --ok: #16a34a;        /* 成功（緑） */
 }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.75; }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
 
-    .wrap { max-width: 960px; margin: 0 auto; padding: 24px; }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; }
-    .title { font-size: clamp(20px, 3vw, 28px); font-weight: 700; letter-spacing: .02em; }
-    .nav { display: flex; gap: 8px; flex-wrap: wrap; }
-    .tabbtn { appearance: none; border: 1px solid #1f2937; background: #0b1220; color: var(--ink); padding: 10px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; }
-    .tabbtn[aria-pressed="true"] { background: #13233f; border-color: #1e40af; color: #dbeafe; }
+/* ========== 基本設定 ========== */
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.75;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-    .panel { background: var(--panel); border: 1px solid #1f2937; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-    .muted { color: var(--ink-dim); }
-    h2 { margin: 8px 0 16px; font-size: clamp(20px, 2.5vw, 26px); }
-    h3 { margin: 24px 0 8px; font-size: clamp(18px, 2.2vw, 22px); }
+.wrap { max-width: 960px; margin: 0 auto; padding: 24px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; flex-wrap: wrap; }
+.title { font-size: clamp(20px, 3vw, 28px); font-weight: 700; letter-spacing: .02em; }
 
-    /* quiz */
-    .q { padding: 16px; border: 1px solid #1f2937; border-radius: 12px; margin: 16px 0; background: #0b1220; }
-    .q h4 { margin: 0 0 10px; font-size: 18px; }
-    .choices { display: grid; gap: 8px; }
-    .choices label { display: flex; gap: 10px; align-items: flex-start; background: #0a1322; border: 1px solid #1f2937; padding: 10px 12px; border-radius: 10px; cursor: pointer; }
-    .choices input { margin-top: 4px; }
+/* ========== ナビゲーション ========== */
+.nav { display: flex; gap: 8px; flex-wrap: wrap; }
+.tabbtn {
+  appearance: none;
+  border: 1px solid var(--ink-dim);
+  background: var(--panel);
+  color: var(--ink);
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s, color 0.3s;
+}
+.tabbtn[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent-2);
+  color: #ffffff;
+}
 
-    .quiz-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-    button.primary { background: #1e3a8a; color: #fff; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; }
-    button.secondary { background: #0b1220; color: var(--ink); border: 1px solid #1f2937; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
-    .score { margin-top: 12px; font-weight: 700; }
-    .feedback { margin-top: 6px; padding: 8px 10px; border-radius: 8px; display: inline-block; }
-    .feedback.ok { background: rgba(34,197,94,.12); color: var(--ok); border: 1px solid rgba(34,197,94,.35); }
-    .feedback.ng { background: rgba(248,113,113,.12); color: var(--danger); border: 1px solid rgba(248,113,113,.35); }
-    .footnote { margin-top: 20px; font-size: 14px; color: var(--ink-dim); }
+/* ========== コンテンツパネル ========== */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--ink-dim);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+.muted { color: var(--ink-dim); }
+h2 { margin: 8px 0 16px; font-size: clamp(20px, 2.5vw, 26px); }
+h3 { margin: 24px 0 8px; font-size: clamp(18px, 2.2vw, 22px); }
 
-    @media (prefers-color-scheme: light) {
-      :root { --bg: #f3f4f6; --panel: #ffffff; --ink: #0b1220; --ink-dim: #4b5563; }
-      .tabbtn { border-color: #e5e7eb; background: #fff; }
-      .panel { border-color: #e5e7eb; }
-      .q { background: #fff; border-color: #e5e7eb; }
-      .choices label { background: #fff; border-color: #e5e7eb; }
-      .secondary { background: #fff; border-color: #e5e7eb; }
-    }
-  </style>
+/* ========== 画像 ========== */
+img {
+  display: block;
+  margin: 0 auto 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  max-width: 100%;
+  height: auto;
+}
+
+/* ========== クイズ部分 ========== */
+.q {
+  padding: 16px;
+  border: 1px solid var(--ink-dim);
+  border-radius: 12px;
+  margin: 16px 0;
+  background: var(--panel);
+}
+.q h4 { margin: 0 0 10px; font-size: 18px; color: var(--ink); }
+
+.choices { display: grid; gap: 8px; }
+.choices label {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--panel);
+  border: 1px solid var(--ink-dim);
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.choices label:hover {
+  background: rgba(52, 211, 153, 0.12);
+  border-color: var(--accent-2);
+}
+.choices input { margin-top: 4px; }
+
+/* ========== ボタン ========== */
+.quiz-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+button.primary {
+  background: var(--accent-2);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 0.3s;
+}
+button.primary:hover {
+  background: #22c55e;
+}
+button.secondary {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--ink-dim);
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button.secondary:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* ========== 採点結果 ========== */
+.score { margin-top: 12px; font-weight: 700; }
+.feedback {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: 600;
+}
+.feedback.ok {
+  background: rgba(34,197,94,.12);
+  color: var(--ok);
+  border: 1px solid rgba(34,197,94,.35);
+}
+.feedback.ng {
+  background: rgba(248,113,113,.12);
+  color: var(--danger);
+  border: 1px solid rgba(248,113,113,.35);
+}
+.footnote {
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--ink-dim);
+  text-align: center;
+}
+</style>
 </head>
 <body>
   <div class="wrap">
@@ -291,4 +393,5 @@
   </script>
 </body>
 </html>
+
 
